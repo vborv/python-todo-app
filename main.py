@@ -1,5 +1,10 @@
-ESTADO_COMPLETADA="✔️ "
-ESTADO_PENDIENTE="❌"
+
+# Usar diccionario para mapear los estados 
+ESTADOS = {
+    "pendiente": "❌",
+    "en_proceso": "⏳",
+    "completada": "✔️"
+}
 
 tareas = []
 
@@ -11,15 +16,15 @@ def mostrar_tareas():
     
     print("Tareas pendientes:")
     for i, tarea in enumerate(tareas):
-        estado = ESTADO_COMPLETADA if tarea["completada"] else ESTADO_PENDIENTE
-        print(f"{i + 1}. {tarea['nombre']} [{estado}]")
+        estado_visual = ESTADOS.get(tarea["estado"], "?")
+        print(f"{i + 1}. {tarea['nombre']} [{estado_visual}]")
     print("----------------------------\n")
 
 #Añadir tarea
 def añadir_tarea():
     nombre = input("Introduce el nombre de la tarea: ")
     if nombre.strip():
-        tareas.append({"nombre": nombre, "completada": False})
+        tareas.append({"nombre": nombre, "estado": "pendiente"})
         print(f"Tarea '{nombre}' añadida con éxito.\n")
     else:
         print("El nombre de la tarea no puede estar vacío.\n")
@@ -34,11 +39,32 @@ def marcar_tarea_completada():
         indice = int(input("Introduce el número de la tarea a marcar como completada: "))
         if 1 <= indice <= len(tareas):
             tarea_seleccionada = tareas[indice - 1]
-            if tarea_seleccionada["completada"]:
+            if tarea_seleccionada["estado"] == "completada":
                 print(f"La tarea '{tarea_seleccionada['nombre']}' ya estaba completada.\n")
             else:
-                tarea_seleccionada["completada"] = True
+                tarea_seleccionada["estado"] = "completada"
                 print(f"Tarea '{tarea_seleccionada['nombre']}' marcada como completada.\n")
+        else:
+            print("Número de tarea inválido.\n")
+    except ValueError:
+        print("Por favor, introduce un número válido.\n")
+
+#Marcar tarea como en proceso
+def marcar_tarea_enproceso():
+    mostrar_tareas()
+    if not tareas:
+        return
+    try:
+        indice = int(input("Introduce el número de la tarea a marcar como en proceso: "))
+        if 1 <= indice <= len(tareas):
+            tarea_seleccionada = tareas[indice - 1]
+            if tarea_seleccionada["estado"] == "completada":
+                print(f"La tarea '{tarea_seleccionada['nombre']}' ya estaba completada y no puede ser marcada como en proceso.\n")
+            elif tarea_seleccionada["estado"] == "en_proceso":
+                print(f"La tarea '{tarea_seleccionada['nombre']}' ya está en proceso.\n")
+            else:
+                tarea_seleccionada["estado"] = "en_proceso"
+                print(f"Tarea '{tarea_seleccionada['nombre']}' marcada como en proceso.\n")    
         else:
             print("Número de tarea inválido.\n")
     except ValueError:
@@ -66,7 +92,7 @@ def eliminar_completadas():
     # Contamos cuántas tareas hay antes de eliminar
     num_tareas_antes = len(tareas)
     # Creamos una nueva lista solo con las tareas pendientes
-    tareas = [tarea for tarea in tareas if not tarea["completada"]]
+    tareas = [tarea for tarea in tareas if tarea["estado"] != "completada"]
     if len(tareas) < num_tareas_antes:
         print("Todas las tareas completadas han sido eliminadas.\n")
     else:
@@ -87,9 +113,10 @@ def main():
         print("3. Marcar tarea como completada")
         print("4. Eliminar tarea específica")
         print("5. Eliminar todas las tareas completadas")
-        print("6. Salir")
+        print("6. Marcar tarea como en proceso")
+        print("7. Salir")
 
-        opcion = input("Elige una opción (1-6): ")
+        opcion = input("Elige una opción (1-7): ")
         if opcion == '1':
             mostrar_tareas()
         elif opcion == '2':
@@ -101,9 +128,11 @@ def main():
         elif opcion == '5':
             eliminar_completadas()
         elif opcion == '6':
+            marcar_tarea_enproceso()
+        elif opcion == '7':
             salir()
         else:
-            print("Opción no válida. Por favor, elige un número del 1 al 6.\n")
+            print("Opción no válida. Por favor, elige un número del 1 al 7.\n")
 
 if __name__ == "__main__":
     main()
