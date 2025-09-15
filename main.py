@@ -101,8 +101,7 @@ def main():
         elif opcion == '5':
             eliminar_completadas()
         elif opcion == '6':
-        if opcion == '6':
-            opciones[opcion]()
+            salir()
         else:
             print("Opción no válida. Por favor, elige un número del 1 al 6.\n")
 
